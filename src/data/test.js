@@ -6,8 +6,10 @@
   // - text/quotes
 
 let ipsumText = {
-  name: 'Ipsum test data',
+  title: 'Ipsum test data',
   description: 'dummy data for the ipsum project',
+  prompt: 'How many paragraphs do you want?',
+  buttonText: 'Allez',
   text: [
     'like a new signing',
     'there is not enough value in the market',

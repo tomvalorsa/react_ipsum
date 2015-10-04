@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './index.css'
 import classnames from 'classnames'
+import { CountInput } from 'CountInput'
 
 export class App extends React.Component {
   state = {
@@ -8,34 +9,46 @@ export class App extends React.Component {
     count: 0
   }
 
-  setCount(){
-    let input = this.refs.count.getDOMNode()
-    let count = $(input).val()
+  setCount(count){
     this.setState({count})
+  }
+
+  sampleArray(array){
+    return array[Math.floor(Math.random() * array.length)]
+  }
+
+  formatParagraph(paragraph, key){
+    // TODO - will these become important enough to have their own components?
+    let string = paragraph.join(' ')
+    string = string.charAt(0).toUpperCase() + string.slice(1)
+    string += '.'
+
+    return (
+      <p key={key}>{string}</p>
+    )
   }
 
   generateText(count){
     let textArray = this.props.data.text
     let paragraphs = []
-    // TODO - account for sentences and punctuation
-    for (let i = 0; i < count; i++) { // each paragraph
+    // TODO:
+    // - account for sentences and punctuation
+    // - make paragraph size more dynamic (e.g. random number between 200-300 chars so there are varying lengths)
+    // - clean up creation process below
+    for (let i = 0; i < count; i++) {
       let charLimit = 200
       let charCount = 0
-      let string = ''
+      let paragraph = []
+      let word
       while (charCount < charLimit) {
-        // maybe make string an array so that we can check for back-to-back duplicates
-          // we can also make the first phrase capitalised
-        // then we can join them with ' ' and append a '.' as a final step
-        // then flatten the array for use in the <p> tags
-        let word = textArray[Math.floor(Math.random() * textArray.length)]
-        string += word
+        do {
+          word = this.sampleArray(textArray)
+        } while (paragraph[paragraph.length - 1] === word)
+        paragraph.push(word)
         charCount += word.length
-        string += charCount >= 200 ? '.' : ' '
       }
-      // paragraphs.push(this.formatParagraph(paragraph)) could be an alternative, split up logic
-      paragraphs.push(
-        <p key={i}>{string}</p>
-      )
+
+      paragraphs.push(this.formatParagraph(paragraph, i))
     }
     return paragraphs
   }
@@ -46,11 +59,10 @@ export class App extends React.Component {
 
     return (
       <div className={styles.container}>
-        <h1>Arsene Wenger Ipsum</h1>
-        <h3>"He'd probably be injured anyway..."</h3>
-        <p>How many paragraphs do you want?</p>
-        <input ref='count' type='text' />
-        <button onClick={::this.setCount}>Go!</button>
+        <h1>{this.props.data.title}</h1>
+        <h3>{this.props.data.description}</h3>
+        <p>{this.props.data.prompt}</p>
+        <CountInput setCount={::this.setCount} text={this.props.data.buttonText} />
         <div>
           {paragraphs}
         </div>
@@ -58,4 +70,3 @@ export class App extends React.Component {
     )
   }
 }
-
